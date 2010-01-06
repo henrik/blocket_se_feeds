@@ -1,0 +1,4 @@
+AddHandler cgi-script .rb
+Options -MultiViews
+RewriteEngine on
+RewriteRule ^blocket(/.+)$ atomic_block.rb [QSA]

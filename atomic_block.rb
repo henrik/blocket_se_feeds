@@ -174,7 +174,7 @@ end
 
 if __FILE__ == $0 && ENV['REQUEST_URI']  # CGI access.
 
-  path = ENV['REQUEST_URI'].split("/", 3).last.to_s
+  path = ENV['REQUEST_URI'].split("/").last.to_s
   url = "http://www.blocket.se/#{path}"
   scraper = Blocket::Scraper.new(url)
 

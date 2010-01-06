@@ -60,12 +60,16 @@ module Blocket
 
     def parse_time
       raw_time = @tr.at('th.listing_thumbs_date').inner_html
-      date, time = latin_1_to_utf_8(raw_time).strip.split('<br>')
+      
+      # FIXME: Weird issue where conversion is needed in dev but breaks in production.
+      raw_time = latin_1_to_utf_8(raw_time) unless raw_time.include?("å")
+      
+      date, time = raw_time.strip.split('<br>')
 
       date =
         case date
         when "Idag": Date.today
-        when "Igår": Date.today - 1
+        when /Igår/: Date.today - 1  # Igår.
         when /okt/:  date.sub(/okt/, 'oct')
         when /maj/:  date.sub(/maj/, 'may')
         else         date
@@ -154,8 +158,8 @@ module Blocket
   
     def parse_title
       title = @page.title
-      query = @page.at('#searchtext')[:value] rescue nil
-      @title = [query, title].compact.map {|s| s.strip }.join(' | ')
+      query = @page.at('#searchtext')[:value] rescue ""
+      @title = [query, title].map {|s| s.strip }.reject {|s| s.empty? }.join(' | ')
     end
     
     def parse_items

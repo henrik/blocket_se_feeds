@@ -45,7 +45,7 @@ module Blocket
           lowered_price = self.lowered_price? ? %[<b style="color:green">↘ Prissänkt</b>] : nil   # Unicode south-east arrow.
           data << ["<b>Pris:</b> #{self.price}", lowered_price].compact.join(" ")
         end
-        data << %[<img src="#{self.image_url}">] if self.image_url
+        data << %[<a href="#{self.url}"><img src="#{self.image_url}"></a>] if self.image_url
         entry.content data.map {|x| "<p>#{x}</p>" }.join, :type => 'html'
       end
     end

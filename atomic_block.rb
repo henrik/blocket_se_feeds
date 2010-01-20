@@ -176,14 +176,24 @@ module Blocket
 end
 
 
-if __FILE__ == $0 && ENV['REQUEST_URI']  # CGI access.
+if __FILE__ == $0
+  
+  if ENV['REQUEST_URI']  # CGI access.
 
-  path = ENV['REQUEST_URI'].split("/").last.to_s
-  url = "http://www.blocket.se/#{path}"
-  scraper = Blocket::Scraper.new(url)
+    path = ENV['REQUEST_URI'].split("/").last.to_s
+    url = "http://www.blocket.se/#{path}"
+    scraper = Blocket::Scraper.new(url)
 
-  puts "Content-Type: application/atom+xml; charset=utf-8"
-  puts
-  puts scraper.to_atom
+    puts "Content-Type: application/atom+xml; charset=utf-8"
+    puts
+    puts scraper.to_atom
+    
+  else  # Command line, to debug
+    
+    url = "http://www.blocket.se/stockholm?q=bokhylla"
+    scraper = Blocket::Scraper.new(url)
+    puts scraper.to_atom
+    
+  end
 
 end

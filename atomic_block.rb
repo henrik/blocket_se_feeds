@@ -69,7 +69,7 @@ module Blocket
       date =
         case date
         when "Idag": Date.today
-        when "Igår": Date.today - 1  # Igår.
+        when "Igår": Date.today - 1
         when /okt/:  date.sub(/okt/, 'oct')
         when /maj/:  date.sub(/maj/, 'may')
         else         date

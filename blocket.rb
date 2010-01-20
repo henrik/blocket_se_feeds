@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Atomic Block by Henrik Nyh <http://henrik.nyh.se> 2010-01-06 under the MIT license.
+# Blocket.se Feeds by Henrik Nyh <http://henrik.nyh.se> 2010-01-06 under the MIT license.
 # Atom (RSS) feed for Blocket.se searches.
 
 %w[cgi iconv time date rubygems].each {|lib| require lib }
@@ -112,8 +112,8 @@ module Blocket
   
 
   class Scraper
-    NAME = "Atomic Block"
-    TAG_NAME = "atomic-block"
+    NAME = "Blocket.se Feeds"
+    TAG_NAME = "blocket-se-feeds"
     VERSION = "1.0"
     SCHEMA_DATE = "2010-01-06"
     

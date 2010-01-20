@@ -15,7 +15,7 @@ Since it seems Blocket.se actively try to block or break attempts to provide fee
 
 ## Example screenshot
 
-Example screenshot in Google Reader:
+Example screenshot in Safari:
 
 ![Screenshot](http://henrik.nyh.se/uploads/blocket_se_feeds.png)
 

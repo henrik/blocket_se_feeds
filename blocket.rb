@@ -49,11 +49,11 @@ module Blocket
       content = data.map {|x| "<p>#{x}</p>" }.join
     
       {
-        :id      => id,
-        :title   => self.title,
-        :updated => self.time,
-        :url     => self.url,
-        :content => content
+        :id         => id,
+        :title      => self.title,
+        :updated_at => self.time,
+        :url        => self.url,
+        :content    => content
       }
     end
     
@@ -142,7 +142,7 @@ module Blocket
     end
     
     def to_atom
-      updated_at = (items.first ? items.first.time : Time.now).iso8601
+      updated_at = items.first ? items.first.time : Time.now
       self.class.feed(:title => @title, :url => @url, :updated_at => updated_at) do |feed|      
         items.each do |item|
           self.class.feed_entry(feed, item.to_hash)
@@ -153,11 +153,11 @@ module Blocket
     def self.render_exception(e)
       self.feed(:title => "Blocket.se", :url => GITHUB_URL, :updated_at => Time.now) do |feed|
         self.feed_entry(feed,
-          :id      => 'exception',
-          :title   => "Scraper exception!",
-          :updated => Time.now,
-          :url     => GITHUB_URL,
-          :content => "<h1>#{e.message}</h1><p>#{e.backtrace}</p>"
+          :id         => 'exception',
+          :title      => "Scraper exception!",
+          :updated_at => Time.now,
+          :url        => GITHUB_URL,
+          :content    => "<h1>#{e.message}</h1><p>#{e.backtrace}</p>"
         )
       end
     end
@@ -171,7 +171,7 @@ module Blocket
         feed.title     opts[:title]
         feed.id        "#{self.atom_namespace}:#{opts[:url]}"
         feed.link      :href => opts[:url]
-        feed.updated   opts[:updated_at]
+        feed.updated   opts[:updated_at].iso8601
         feed.author    {|a| a.name 'Blocket.se' }
         feed.generator NAME, :version => VERSION
         %w[ads classifieds swedish].each {|cat| feed.category :term => cat }
@@ -183,7 +183,7 @@ module Blocket
       feed.entry do |entry|
         entry.id      "#{self.atom_namespace}:#{opts[:id]}"
         entry.title   opts[:title]
-        entry.updated opts[:updated].iso8601
+        entry.updated opts[:updated_at].iso8601
         entry.link    :href => opts[:url]
         entry.content opts[:content], :type => 'html'
       end

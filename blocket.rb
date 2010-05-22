@@ -7,19 +7,23 @@
 require "mechanize"  # sudo gem install mechanize
 require('builder') rescue require('active_support')  # sudo gem install builder
 
-USER_AGENT = WWW::Mechanize::AGENT_ALIASES['Windows IE 7']
-
 # CET should be considered local time.
 # Seems to work fine during daylight savings (CEST).
 ENV['TZ'] = 'CET'
 
+USER_AGENT = WWW::Mechanize::AGENT_ALIASES['Windows IE 7']
+
 
 module Blocket
-  CSS_DATE    = "th.listing_lithumbs_date"
-  CSS_SUBJECT = "td.lithumbs_subject"
-  CSS_IMAGE   = "td.listing_lithumbs_image"
+
+  GITHUB_URL = "http://github.com/henrik/blocket_se_feeds"
 
   class Item
+    
+    CSS_DATE    = "th.listing_lithumbs_date"
+    CSS_SUBJECT = "td.lithumbs_subject"
+    CSS_IMAGE   = "td.listing_lithumbs_image"
+    
     attr_reader :id, :time, :thumb_url, :url, :title, :price
 
     def initialize(tr)
@@ -35,22 +39,22 @@ module Blocket
       @lowered_price
     end
         
-    def to_atom(feed)
-      feed.entry do |entry|
-
-        entry.id      "#{Scraper.atom_namespace}:#{id}"
-        entry.title   self.title
-        entry.updated self.time.iso8601
-        entry.link    :href => self.url
-        
-        data = []
-        if self.price
-          lowered_price = self.lowered_price? ? %[<b style="color:green">↘ Prissänkt</b>] : nil   # Unicode south-east arrow.
-          data << ["<b>Pris:</b> #{self.price}", lowered_price].compact.join(" ")
-        end
-        data << %[<a href="#{self.url}"><img src="#{self.image_url}"></a>] if self.image_url
-        entry.content data.map {|x| "<p>#{x}</p>" }.join, :type => 'html'
+    def to_hash
+      data = []
+      if self.price
+        lowered_price = self.lowered_price? ? %[<b style="color:green">↘ Prissänkt</b>] : nil   # Unicode south-east arrow.
+        data << ["<b>Pris:</b> #{self.price}", lowered_price].compact.join(" ")
       end
+      data << %[<a href="#{self.url}"><img src="#{self.image_url}"></a>] if self.image_url
+      content = data.map {|x| "<p>#{x}</p>" }.join
+    
+      {
+        :id      => id,
+        :title   => self.title,
+        :updated => self.time,
+        :url     => self.url,
+        :content => content
+      }
     end
     
   protected
@@ -114,7 +118,7 @@ module Blocket
   end
   
 
-  class Scraper
+  class ScraperFeeder
     NAME = "Blocket.se Feeds"
     TAG_NAME = "blocket-se-feeds"
     VERSION = "1.0"
@@ -139,25 +143,53 @@ module Blocket
     
     def to_atom
       updated_at = (items.first ? items.first.time : Time.now).iso8601
-
-      xml = Builder::XmlMarkup.new(:indent => 2)
-      xml.instruct! :xml, :version => "1.0" 
-      xml.feed(:xmlns => "http://www.w3.org/2005/Atom") do |feed|
-        feed.title     @title
-        feed.id        "#{self.class.atom_namespace}:#{@url}"
-        feed.link      :href => @url
-        feed.updated   updated_at
-        feed.author    {|a| a.name 'Blocket.se' }
-        feed.generator NAME, :version => VERSION
-        %w[ads classifieds swedish].each {|cat| feed.category :term => cat }
-        
+      self.class.feed(:title => @title, :url => @url, :updated_at => updated_at) do |feed|      
         items.each do |item|
-          item.to_atom(feed)
+          self.class.feed_entry(feed, item.to_hash)
         end
       end
     end
     
+    def self.render_exception(e)
+      self.feed(:title => "Blocket.se", :url => GITHUB_URL, :updated_at => Time.now) do |feed|
+        self.feed_entry(feed,
+          :id      => 'exception',
+          :title   => "Scraper exception!",
+          :updated => Time.now,
+          :url     => GITHUB_URL,
+          :content => "<h1>#{e.message}</h1><p>#{e.backtrace}</p>"
+        )
+      end
+    end
+    
   protected
+  
+    def self.feed(opts={})
+      xml = Builder::XmlMarkup.new(:indent => 2)
+      xml.instruct! :xml, :version => "1.0" 
+      xml.feed(:xmlns => "http://www.w3.org/2005/Atom") do |feed|
+        feed.title     opts[:title]
+        feed.id        "#{ScraperFeeder.atom_namespace}:#{opts[:url]}"
+        feed.link      :href => opts[:url]
+        if opts[:updated_at]
+          feed.updated   opts[:updated_at]
+        end
+        feed.author    {|a| a.name 'Blocket.se' }
+        feed.generator NAME, :version => VERSION
+        %w[ads classifieds swedish].each {|cat| feed.category :term => cat }
+        yield(feed)
+      end
+    end
+    
+    def self.feed_entry(feed, opts={})
+      feed.entry do |entry|
+        entry.id      "#{ScraperFeeder.atom_namespace}:#{opts[:id]}"
+        entry.title   opts[:title]
+        entry.updated opts[:updated].iso8601
+        entry.link    :href => opts[:url]
+        entry.content opts[:content], :type => 'html'
+      end
+    end
   
     def parse_title
       title = @page.title
@@ -185,16 +217,20 @@ if __FILE__ == $0
 
     path = ENV['REQUEST_URI'].split("/").last.to_s
     url = "http://www.blocket.se/#{path}"
-    scraper = Blocket::Scraper.new(url)
 
     puts "Content-Type: application/atom+xml; charset=utf-8"
-    puts
-    puts scraper.to_atom
+    puts    
+
+    begin  
+      puts Blocket::ScraperFeeder.new(url).to_atom
+    rescue => e
+      puts Blocket::ScraperFeeder.render_exception(e)
+    end
     
   else  # Command line, to debug
     
     url = "http://www.blocket.se/stockholm?q=bokhylla"
-    scraper = Blocket::Scraper.new(url)
+    scraper = Blocket::ScraperFeeder.new(url)
     puts scraper.to_atom
     
   end

@@ -169,7 +169,7 @@ module Blocket
       xml.instruct! :xml, :version => "1.0" 
       xml.feed(:xmlns => "http://www.w3.org/2005/Atom") do |feed|
         feed.title     opts[:title]
-        feed.id        "#{ScraperFeeder.atom_namespace}:#{opts[:url]}"
+        feed.id        "#{self.atom_namespace}:#{opts[:url]}"
         feed.link      :href => opts[:url]
         feed.updated   opts[:updated_at]
         feed.author    {|a| a.name 'Blocket.se' }
@@ -181,7 +181,7 @@ module Blocket
     
     def self.feed_entry(feed, opts={})
       feed.entry do |entry|
-        entry.id      "#{ScraperFeeder.atom_namespace}:#{opts[:id]}"
+        entry.id      "#{self.atom_namespace}:#{opts[:id]}"
         entry.title   opts[:title]
         entry.updated opts[:updated].iso8601
         entry.link    :href => opts[:url]

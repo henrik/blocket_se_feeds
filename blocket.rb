@@ -171,9 +171,7 @@ module Blocket
         feed.title     opts[:title]
         feed.id        "#{ScraperFeeder.atom_namespace}:#{opts[:url]}"
         feed.link      :href => opts[:url]
-        if opts[:updated_at]
-          feed.updated   opts[:updated_at]
-        end
+        feed.updated   opts[:updated_at]
         feed.author    {|a| a.name 'Blocket.se' }
         feed.generator NAME, :version => VERSION
         %w[ads classifieds swedish].each {|cat| feed.category :term => cat }

@@ -15,6 +15,9 @@ ENV['TZ'] = 'CET'
 
 
 module Blocket
+  CSS_DATE    = "th.listing_lithumbs_date"
+  CSS_SUBJECT = "td.lithumbs_subject"
+  CSS_IMAGE   = "td.listing_lithumbs_image"
 
   class Item
     attr_reader :id, :time, :thumb_url, :url, :title, :price
@@ -58,8 +61,8 @@ module Blocket
       parse_subject
     end
 
-    def parse_time
-      raw_time = @tr.at('th.listing_thumbs_date').inner_html
+    def parse_time    
+      raw_time = @tr.at(CSS_DATE).inner_html
       
       # FIXME: Weird issue where conversion is needed in dev but breaks in production.
       raw_time = latin_1_to_utf_8(raw_time) unless raw_time.include?("å")
@@ -85,12 +88,12 @@ module Blocket
     end
   
     def parse_image
-      raw_img = @tr.at('td.listing_thumbs_image img[alt="Bild"]') || @tr.at('td.listing_thumbs_image img[alt="Flera bilder"]')
+      raw_img = @tr.at("#{CSS_IMAGE} img[alt='Bild']") || @tr.at("#{CSS_IMAGE} img[alt='Flera bilder']")
       @thumb_url = raw_img && raw_img[:src]
     end
   
     def parse_subject
-      raw_subject = @tr.at('td.thumbs_subject')
+      raw_subject = @tr.at(CSS_SUBJECT)
       a = raw_subject.at('a')    
       @url = a[:href]
       @title = a.inner_text.strip

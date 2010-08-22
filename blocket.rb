@@ -11,7 +11,7 @@ require('builder') rescue require('active_support')  # sudo gem install builder
 # Seems to work fine during daylight savings (CEST).
 ENV['TZ'] = 'CET'
 
-USER_AGENT = WWW::Mechanize::AGENT_ALIASES['Windows IE 7']
+USER_AGENT = Mechanize::AGENT_ALIASES['Windows IE 7']
 
 
 module Blocket
@@ -135,7 +135,7 @@ module Blocket
         sub(/&o=\d+/, "&o=1").     # Always show first page.
         sub(/&md=\w+/, "&md=th").  # Always show thumbs.
         sub(/&sp=\d+/, "&sp=0")    # Always sort by date.
-      a = WWW::Mechanize.new { |agent| agent.user_agent = USER_AGENT }
+      a = Mechanize.new { |agent| agent.user_agent = USER_AGENT }
       @page = a.get(@url)
       parse_title
       parse_items

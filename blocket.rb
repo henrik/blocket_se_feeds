@@ -68,9 +68,6 @@ module Blocket
     def parse_time    
       raw_time = @row.at(CSS_DATE).inner_text
       
-      # FIXME: Weird issue where conversion is needed in dev but breaks in production.
-      raw_time = latin_1_to_utf_8(raw_time) unless raw_time.include?("å")
-
       parts = raw_time.strip.split
       time = parts.pop
       date = parts.join(' ')
@@ -111,10 +108,6 @@ module Blocket
       @lowered_price = !!raw_subject.at('img.sprite_list_icon_price_arrow')
     end
   
-    def latin_1_to_utf_8(text)
-      Iconv.new('utf-8', 'iso-8859-1').iconv(text)
-    end
-
   end
   
 

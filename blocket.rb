@@ -32,7 +32,7 @@ module Blocket
     end
   
     def image_url
-      @thumb_url && @thumb_url.sub('/thumbs', '/images')
+      @thumb_url && @thumb_url.sub('/lithumbs', '/images')
     end
     
     def lowered_price?

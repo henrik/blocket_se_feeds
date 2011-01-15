@@ -20,14 +20,14 @@ module Blocket
 
   class Item
     
-    CSS_DATE    = "th.listing_lithumbs_date"
-    CSS_SUBJECT = "td.lithumbs_subject"
-    CSS_IMAGE   = "td.listing_lithumbs_image"
+    CSS_DATE    = ".date_image"
+    CSS_SUBJECT = ".desc"
+    CSS_IMAGE   = ".ad_image"
     
     attr_reader :id, :time, :thumb_url, :url, :title, :price
 
-    def initialize(tr)
-      @tr = tr
+    def initialize(row)
+      @row = row
       parse
     end
   
@@ -66,12 +66,14 @@ module Blocket
     end
 
     def parse_time    
-      raw_time = @tr.at(CSS_DATE).inner_html
+      raw_time = @row.at(CSS_DATE).inner_text
       
       # FIXME: Weird issue where conversion is needed in dev but breaks in production.
       raw_time = latin_1_to_utf_8(raw_time) unless raw_time.include?("å")
-      
-      date, time = raw_time.strip.split('<br>')
+
+      parts = raw_time.strip.split
+      time = parts.pop
+      date = parts.join(' ')
 
       date =
         case date
@@ -92,23 +94,21 @@ module Blocket
     end
   
     def parse_image
-      raw_img = @tr.at("#{CSS_IMAGE} img[alt='Bild']") || @tr.at("#{CSS_IMAGE} img[alt='Flera bilder']")
+      raw_img = @row.at(CSS_IMAGE)
       @thumb_url = raw_img && raw_img[:src]
     end
   
     def parse_subject
-      raw_subject = @tr.at(CSS_SUBJECT)
+      raw_subject = @row.at(CSS_SUBJECT)
       a = raw_subject.at('a')    
       @url = a[:href]
       @title = a.inner_text.strip
       @id = @url[/(\d+)\.htm/, 1]
 
-      raw_price = latin_1_to_utf_8(raw_subject.inner_html.split('<br>', 2).last)
-      price_fragment = Nokogiri::HTML.fragment(raw_price)
-      @price = price_fragment.inner_text.strip
+      @price = raw_subject.at('.list_price').inner_text.strip
       @price = nil if @price.empty?
 
-      @lowered_price = !!raw_subject.at('img[alt="Prissänkt"]')
+      @lowered_price = !!raw_subject.at('img.sprite_list_icon_price_arrow')
     end
   
     def latin_1_to_utf_8(text)
@@ -196,11 +196,7 @@ module Blocket
     end
     
     def parse_items
-      if table = @page.at('table.listing_thumbs')
-        @items = table.children.map { |tr| Blocket::Item.new(tr) }
-      else
-        @items = []
-      end
+      @items = @page.parser.css('.item_row').map { |row| Blocket::Item.new(row) }
     end
     
   end

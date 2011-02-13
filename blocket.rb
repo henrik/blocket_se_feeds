@@ -19,26 +19,26 @@ module Blocket
   GITHUB_URL = "http://github.com/henrik/blocket_se_feeds"
 
   class Item
-    
+
     CSS_DATE    = ".date_image"
     CSS_SUBJECT = ".desc"
     CSS_IMAGE   = ".ad_image"
-    
+
     attr_reader :id, :time, :thumb_url, :url, :title, :price
 
     def initialize(row)
       @row = row
       parse
     end
-  
+
     def image_url
       @thumb_url && @thumb_url.sub('/lithumbs', '/images')
     end
-    
+
     def lowered_price?
       @lowered_price
     end
-        
+
     def to_hash
       data = []
       if self.price
@@ -47,7 +47,7 @@ module Blocket
       end
       data << %[<a href="#{self.url}"><img src="#{self.image_url}"></a>] if self.image_url
       content = data.map {|x| "<p>#{x}</p>" }.join
-    
+
       {
         :id         => id,
         :title      => self.title,
@@ -56,7 +56,7 @@ module Blocket
         :content    => content
       }
     end
-    
+
   protected
 
     def parse
@@ -65,9 +65,9 @@ module Blocket
       parse_subject
     end
 
-    def parse_time    
+    def parse_time
       raw_time = @row.at(CSS_DATE).inner_text
-      
+
       parts = raw_time.strip.split
       time = parts.pop
       date = parts.join(' ')
@@ -86,18 +86,18 @@ module Blocket
       if result > Time.now  # Future date? Then it was really last year.
         result = Time.parse("#{date} #{result.year-1} #{time}")
       end
-    
+
       @time = result
     end
-  
+
     def parse_image
       raw_img = @row.at(CSS_IMAGE)
       @thumb_url = raw_img && raw_img[:src]
     end
-  
+
     def parse_subject
       raw_subject = @row.at(CSS_SUBJECT)
-      a = raw_subject.at('a')    
+      a = raw_subject.at('a')
       @url = a[:href]
       @title = a.inner_text.strip
       @id = @url[/(\d+)\.htm/, 1]
@@ -107,22 +107,22 @@ module Blocket
 
       @lowered_price = !!raw_subject.at('img.sprite_list_icon_price_arrow')
     end
-  
+
   end
-  
+
 
   class ScraperFeeder
     NAME = "Blocket.se Feeds"
     TAG_NAME = "blocket-se-feeds"
     VERSION = "1.0"
     SCHEMA_DATE = "2010-01-06"
-    
+
     attr_reader :title, :items
-    
+
     def self.atom_namespace
       "tag:#{TAG_NAME},#{SCHEMA_DATE}"
     end
-    
+
     def initialize(url)
       @url = url.
         sub(/&o=\d+/, "&o=1").     # Always show first page.
@@ -133,16 +133,16 @@ module Blocket
       parse_title
       parse_items
     end
-    
+
     def to_atom
       updated_at = items.first ? items.first.time : Time.now
-      self.class.feed(:title => @title, :url => @url, :updated_at => updated_at) do |feed|      
+      self.class.feed(:title => @title, :url => @url, :updated_at => updated_at) do |feed|
         items.each do |item|
           self.class.feed_entry(feed, item.to_hash)
         end
       end
     end
-    
+
     def self.render_exception(e)
       self.feed(:title => "Blocket.se", :url => GITHUB_URL, :updated_at => Time.now) do |feed|
         self.feed_entry(feed,
@@ -154,12 +154,12 @@ module Blocket
         )
       end
     end
-    
+
   protected
-  
+
     def self.feed(opts={})
       xml = Builder::XmlMarkup.new(:indent => 2)
-      xml.instruct! :xml, :version => "1.0" 
+      xml.instruct! :xml, :version => "1.0"
       xml.feed(:xmlns => "http://www.w3.org/2005/Atom") do |feed|
         feed.title     opts[:title]
         feed.id        "#{self.atom_namespace}:#{opts[:url]}"
@@ -171,7 +171,7 @@ module Blocket
         yield(feed)
       end
     end
-    
+
     def self.feed_entry(feed, opts={})
       feed.entry do |entry|
         entry.id      "#{self.atom_namespace}:#{opts[:id]}"
@@ -181,17 +181,17 @@ module Blocket
         entry.content opts[:content], :type => 'html'
       end
     end
-  
+
     def parse_title
       title = @page.title
       query = @page.at('#searchtext')[:value] rescue ""
       @title = [query, title].map {|s| s.strip }.reject {|s| s.empty? }.join(' | ')
     end
-    
+
     def parse_items
       @items = @page.parser.css('.item_row').map { |row| Blocket::Item.new(row) }
     end
-    
+
   end
 
 
@@ -199,27 +199,27 @@ end
 
 
 if __FILE__ == $0
-  
+
   if ENV['REQUEST_URI']  # CGI access.
 
     path = ENV['REQUEST_URI'].split("/").last.to_s
     url = "http://www.blocket.se/#{path}"
 
     puts "Content-Type: application/atom+xml; charset=utf-8"
-    puts    
+    puts
 
-    begin  
+    begin
       puts Blocket::ScraperFeeder.new(url).to_atom
     rescue => e
       puts Blocket::ScraperFeeder.render_exception(e)
     end
-    
+
   else  # Command line, to debug
-    
+
     url = "http://www.blocket.se/stockholm?q=bokhylla"
     scraper = Blocket::ScraperFeeder.new(url)
     puts scraper.to_atom
-    
+
   end
 
 end

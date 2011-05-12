@@ -6,9 +6,9 @@ get '/' do
   %{
     <!DOCTYPE html>
     <html>
-      <head><title>Blocket.se Feeds</title></head>
+      <head><title>Blocket.se Atom (RSS) Feeds</title></head>
       <body>
-        <h1>Blocket.se Feeds</h1>
+        <h1>Blocket.se Atom (RSS) Feeds</h1>
         <p>Provides an Atom (RSS, kind of) feed of Blocket.se search results. Blocket.se is a Swedish classifieds site.</p>
         <p>E.g. for a feed of <code>http://www.blocket.se/stockholm?q=fisk</code>, visit:</p>
         <p><code>http://#{request.host_with_port}/stockholm?q=fisk</code></p>

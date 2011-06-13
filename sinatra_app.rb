@@ -5,15 +5,27 @@ require "sinatra"
 get '/' do
   %{
     <!DOCTYPE html>
-    <html>
-      <head><title>Blocket.se Atom (RSS) Feeds</title></head>
+    <html lang="sv">
+      <head><title>Blocket.se RSS-feed</title></head>
       <body>
-        <h1>Blocket.se Atom (RSS) Feeds</h1>
-        <p>Provides an Atom (RSS, kind of) feed of Blocket.se search results. Blocket.se is a Swedish classifieds site.</p>
-        <p>E.g. for a feed of <code>http://www.blocket.se/stockholm?q=fisk</code>, visit:</p>
-        <p><code>http://#{request.host_with_port}/stockholm?q=fisk</code></p>
-        <p>You can set this up on another server if Blocket bans it. <a href="http://github.com/henrik/blocket_se_feeds">View source.</a></p>
-        <p>By <a href="http://henrik.nyh.se">Henrik Nyh</a>.</p>
+        <h1>Blocket.se RSS-feed</h1>
+        <p>Följ Blockets annonser med RSS<a href="#footnote">*</a>.</p>
+        <p>Gör en sökning på Blocket och byt sen ut <code>www.blocket.se</code> i adresssen mot <code>#{request.host_with_port}</code> så har du en feed.</p>
+        <p>
+          T.ex. när du är på <code>http://<strong>www.blocket.se</strong>/stockholm?q=fisk</code>, ändra till
+          <code>http://<strong>#{request.host_with_port}</strong>/stockholm?q=fisk</code>.
+        </p>
+        <p>
+          Eller bokmärk denna bookmarklet för att ändra med ett klick:
+          <a href="javascript:location.href=location.href.replace('www.blocket.se', '#{request.host_with_port}');">Blocket RSS</a>
+        </p>
+        <p>
+          Koden kan sättas upp på en annan server om Blocket blockerar denna.
+          <a href="http://github.com/henrik/blocket_se_feeds">Visa källa.</a>
+        </p>
+        <p>Av <a href="http://henrik.nyh.se">Henrik Nyh</a>.</p>
+        <hr>
+        <p><span id="footnote">*</span> Tekniskt sett är det Atom, men det funkar likadant.</p>
       </body>
     </html>
   }

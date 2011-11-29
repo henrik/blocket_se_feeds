@@ -22,7 +22,7 @@ module Blocket
 
     CSS_DATE    = ".date_image"
     CSS_SUBJECT = ".desc"
-    CSS_IMAGE   = ".ad_image"
+    CSS_IMAGE   = ".image_content img"
 
     attr_reader :id, :time, :thumb_url, :url, :title, :price
 
@@ -97,7 +97,8 @@ module Blocket
 
     def parse_image
       raw_img = @row.at(CSS_IMAGE)
-      @thumb_url = raw_img && raw_img[:src]
+      # Lazy-loaded images put the src in longdesc.
+      @thumb_url = raw_img && (raw_img[:longdesc] || raw_img[:src])
     end
 
     def parse_subject

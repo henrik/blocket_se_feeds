@@ -21,7 +21,7 @@ module Blocket
 
   class Item
 
-    CSS_DATE    = ".date_image"
+    CSS_DATE    = ".list_date"
     CSS_SUBJECT = ".desc"
     CSS_IMAGE   = ".image_content img"
 

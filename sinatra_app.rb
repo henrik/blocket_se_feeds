@@ -1,4 +1,6 @@
-require "blocket"
+# encoding: utf-8
+
+require_relative "blocket"
 require "rubygems"
 require "sinatra"
 

@@ -1,4 +1,5 @@
-#!/usr/bin/env ruby
+# encoding: utf-8
+
 # Blocket.se Feeds by Henrik Nyh <http://henrik.nyh.se> 2010-01-06 under the MIT license.
 # Atom (RSS) feed for Blocket.se searches.
 
@@ -79,11 +80,16 @@ module Blocket
 
       date =
         case date
-        when "Idag": Date.today
-        when "Igår": Date.today - 1
-        when /okt/:  date.sub(/okt/, 'oct')
-        when /maj/:  date.sub(/maj/, 'may')
-        else         date
+        when "Idag"
+          Date.today
+        when "Igår"
+          Date.today - 1
+        when /okt/
+          date.sub(/okt/, 'oct')
+        when /maj/
+          date.sub(/maj/, 'may')
+        else
+          date
         end
 
       result = Time.parse("#{date} #{time}")

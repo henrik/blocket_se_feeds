@@ -8,6 +8,7 @@ get '/' do
   %{
     <!DOCTYPE html>
     <html lang="sv">
+      <meta charset="UTF-8">
       <head><title>Blocket.se RSS-feed</title></head>
       <body>
         <h1>Blocket.se RSS-feed</h1>

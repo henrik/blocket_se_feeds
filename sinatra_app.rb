@@ -38,8 +38,18 @@ get %r{/(.+)} do
   url = "http://www.blocket.se#{request.fullpath}"
   content_type 'application/atom+xml', :charset => 'utf-8'
   begin
-    Blocket::ScraperFeeder.new(url).to_atom
+    heroku_timeout do
+      Blocket::ScraperFeeder.new(url).to_atom
+    end
   rescue => e
     Blocket::ScraperFeeder.render_exception(e)
+  end
+end
+
+# http://adam.heroku.com/past/2008/6/17/battling_wedged_mongrels_with_a/
+def heroku_timeout
+  require "timeout"
+  Timeout.timeout(29) do
+    yield
   end
 end

@@ -49,7 +49,7 @@ end
 # http://adam.heroku.com/past/2008/6/17/battling_wedged_mongrels_with_a/
 def heroku_timeout
   require "timeout"
-  Timeout.timeout(29) do
+  Timeout.timeout(10) do
     yield
   end
 end

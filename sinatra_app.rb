@@ -5,6 +5,7 @@ require "rubygems"
 require "sinatra"
 
 get '/' do
+  set_cache_headers
   %{
     <!DOCTYPE html>
     <html lang="sv">
@@ -39,7 +40,9 @@ get %r{/(.+)} do
   content_type 'application/atom+xml', :charset => 'utf-8'
   begin
     heroku_timeout do
-      Blocket::ScraperFeeder.new(url).to_atom
+      body = Blocket::ScraperFeeder.new(url).to_atom
+      set_cache_headers  # Only if body didn't time out. Don't cache errors.
+      body
     end
   rescue => e
     Blocket::ScraperFeeder.render_exception(e)
@@ -53,3 +56,11 @@ def heroku_timeout
     yield
   end
 end
+
+def set_cache_headers
+  # Varnish may cache pages for an hour.
+  # NOTE: Only supported on Heroku's Aspen or Bamboo stack.
+  # https://devcenter.heroku.com/articles/http-caching
+  headers 'Cache-Control' => 'public, max-age=3600'
+end
+

@@ -14,7 +14,7 @@ get '/' do
       <body>
         <h1>Blocket.se RSS-feed</h1>
         <p>Följ Blockets annonser med RSS<a href="#footnote">*</a>.</p>
-        <p>Gör en sökning på Blocket och byt sen ut <code>www.blocket.se</code> i adresssen mot <code>#{request.host_with_port}</code> så har du en feed.</p>
+        <p>Gör en sökning på Blocket och byt sen ut <code>www.blocket.se</code> i adressen mot <code>#{request.host_with_port}</code> så har du en feed.</p>
         <p>
           T.ex. när du är på <code>http://<strong>www.blocket.se</strong>/stockholm?q=fisk</code>, ändra till
           <code>http://<strong>#{request.host_with_port}</strong>/stockholm?q=fisk</code>.

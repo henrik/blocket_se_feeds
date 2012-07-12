@@ -2,20 +2,29 @@
 
 Ruby script that uses `mechanize` and `Builder` to provide an Atom (RSS, kind of) feed of Blocket.se search results. Blocket.se is a Swedish classifieds site.
 
-Use it something like this (Sinatra app suitable for [Heroku](http://heroku.com)):
+Blocket.se seem to actively try to block or break attempts to provide feeds of their classifieds.
 
-    http://example.com/stockholm?q=fisk
+There is a hosted version of this script on <http://blocket.heroku.com>, but you may want to set it up on your own server if they block it, or if the hosted version gets overloaded.
 
-Or this (CGI script, see the included `.htaccess` for Apache):
+
+## On Heroku
+
+You don't need much more than this to set up your own copy for free on [Heroku](http://heroku.com). They're incredible.
+
+    gem install heroku                      # Install tools.
+    heroku create blocket-some-unique-name  # Create server.
+    heroku addons:add memcache              # Add memcached.
+    git push heroku                         # Deploy app.
+    heroku open                             # See it in your browser.
+
+
+## CGI on Apache
+
+The included `.htaccess` used to work with Apache and hopefully still does.
+
+The path to request becomes e.g.
 
     http://example.com/blocket.atom/stockholm?q=fisk
-
-The last part of the URL path should be identical to the Blocket.se search URL, e.g.
-
-    http://www.blocket.se/stockholm?q=fisk
-
-Blocket.se seem to actively try to block or break attempts to provide feeds of their classifieds.
-There is a hosted version of this script on <http://blocket.heroku.com>, but you may want to set it up on your own server if they block it.
 
 
 ## Example screenshot

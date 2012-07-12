@@ -1,11 +1,21 @@
 # encoding: utf-8
 
-require_relative "blocket"
 require "rubygems"
-require "sinatra"
+require "bundler"
+Bundler.require :default, (ENV['RACK_ENV'] || "development").to_sym
+
+# Defined in ENV on Heroku. To try locally, start memcached and uncomment:
+ ENV['MEMCACHE_SERVERS'] = "localhost"
+if memcache_servers = ENV['MEMCACHE_SERVERS']
+  use Rack::Cache,
+    verbose: true,
+    metastore:   "memcached://#{memcache_servers}",
+    entitystore: "memcached://#{memcache_servers}"
+end
+
+require "./blocket"
 
 get '/' do
-  set_cache_headers
   %{
     <!DOCTYPE html>
     <html lang="sv">
@@ -41,7 +51,8 @@ get %r{/(.+)} do
   begin
     heroku_timeout do
       body = Blocket::ScraperFeeder.new(url).to_atom
-      set_cache_headers  # Only if body didn't time out. Don't cache errors.
+      # Only if body didn't time out. Don't cache errors.
+      cache_control :public, max_age: 1800  # 30 mins.
       body
     end
   rescue => e
@@ -56,11 +67,3 @@ def heroku_timeout
     yield
   end
 end
-
-def set_cache_headers
-  # Varnish may cache pages for an hour.
-  # NOTE: Only supported on Heroku's Aspen or Bamboo stack.
-  # https://devcenter.heroku.com/articles/http-caching
-  headers 'Cache-Control' => 'public, max-age=3600'
-end
-

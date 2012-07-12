@@ -1,6 +1,8 @@
 source :rubygems
 
 gem "sinatra"
+gem "slim"
+gem "rdiscount"
 gem "mechanize"
 gem "builder"
 gem "dalli"

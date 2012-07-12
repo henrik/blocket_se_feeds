@@ -1,0 +1,28 @@
+doctype html
+html
+  head
+    title= @title
+  body
+    h1= @title
+    markdown:
+      Följ Blockets annonser med RSS.
+
+      Gör en sökning på Blocket och byt sen ut **`www.blocket.se`** i adressen mot **`#{request.host_with_port}`** så har du en RSS-feed.
+
+      T.ex. när du är på <code>http://<strong>www.blocket.se</strong>/stockholm?q=fisk</code>, ändra till
+      <code>http://<strong>#{request.host_with_port}</strong>/stockholm?q=fisk</code>.
+
+      Ta den adressen och lägg till i din RSS-läsare, t.ex. [Google Reader](http://www.google.com/reader/).
+
+
+      ## Bookmarklet
+
+        Bokmärk nedanstående länk (gärna i din webbläsares bokmärkesrad) så kan du sedan med ett klick på bokmärket få en RSS-adress från en Blocket-sökning.
+
+      <a href="javascript:location.href=location.href.replace('www.blocket.se', '#{request.host_with_port}');">Blocket RSS</a>
+
+      ## Detaljer
+
+      Koden kan sättas upp på en annan server om Blocket blockerar denna, eller om du vill undvika att denna är överbelastad. [Visa koden.](http://github.com/henrik/blocket_se_feeds)
+
+      Av [Henrik Nyh](http://henrik.nyh.se).

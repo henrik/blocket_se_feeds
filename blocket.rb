@@ -19,9 +19,12 @@ module Blocket
   GITHUB_URL = "http://github.com/henrik/blocket_se_feeds"
 
   class Item
-    CSS_DATE    = ".jlist_date_image, .list_date"
-    CSS_SUBJECT = ".desc"
-    CSS_IMAGE   = ".image_content img"
+    CSS_DATE          = ".jlist_date_image, .list_date"
+    CSS_SUBJECT       = ".desc"
+    CSS_IMAGE         = ".image_content img"
+    # Real estate listings, other listings.
+    CSS_PRICE         = "span[itemprop=price], .list_price"
+    CSS_LOWERED_PRICE = "img.sprite_list_icon_price_arrow"
 
     attr_reader :id, :time, :thumb_url, :url, :title, :price
 
@@ -31,11 +34,11 @@ module Blocket
     end
 
     def image_url
-      @thumb_url && @thumb_url.sub('/lithumbs', '/images')
+      @thumb_url && @thumb_url.sub("/lithumbs", "/images")
     end
 
     def mobile_url
-      url.sub('//www.', '//mobil.')
+      url.sub("//www.", "//mobil.")
     end
 
     def lowered_price?
@@ -53,15 +56,15 @@ module Blocket
       content = data.map {|x| "<p>#{x}</p>" }.join
 
       {
-        :id         => id,
-        :title      => self.title,
-        :updated_at => self.time,
-        :url        => self.url,
-        :content    => content
+        id: id,
+        title: self.title,
+        updated_at: self.time,
+        url: self.url,
+        content: content
       }
     end
 
-    protected
+    private
 
     def parse
       parse_time
@@ -100,9 +103,10 @@ module Blocket
     end
 
     def parse_image
-      raw_img = @row.at(CSS_IMAGE)
-      # Lazy-loaded images put the src in longdesc.
-      @thumb_url = raw_img && (raw_img[:longdesc] || raw_img[:src])
+      if raw_img = @row.at(CSS_IMAGE)
+        # Lazy-loaded images put the src in longdesc.
+        @thumb_url = raw_img[:longdesc] || raw_img[:src]
+      end
     end
 
     def parse_subject
@@ -112,13 +116,12 @@ module Blocket
       @title = a.inner_text.strip
       @id = @url[/(\d+)\.htm/, 1]
 
-      raw_price = raw_subject.at("span[itemprop=price], .list_price")
-      if raw_price
+      if raw_price = raw_subject.at(CSS_PRICE)
         @price = raw_price.inner_text.strip
         @price = nil if @price.empty?
       end
 
-      @lowered_price = !!raw_subject.at('img.sprite_list_icon_price_arrow')
+      @lowered_price = raw_subject.at(CSS_LOWERED_PRICE) != nil
     end
 
   end
@@ -129,6 +132,9 @@ module Blocket
     TAG_NAME = "blocket-se-feeds"
     VERSION = "1.0"
     SCHEMA_DATE = "2010-01-06"
+
+    CSS_QUERY = "#searchtext"
+    CSS_ITEM  = ".item_row"
 
     attr_reader :title, :items
 
@@ -149,7 +155,7 @@ module Blocket
 
     def to_atom
       updated_at = items.first ? items.first.time : Time.now
-      self.class.feed(:title => @title, :url => @url, :updated_at => updated_at) do |feed|
+      self.class.feed(title: @title, url: @url, updated_at: updated_at) do |feed|
         items.each do |item|
           self.class.feed_entry(feed, item.to_hash)
         end
@@ -157,30 +163,30 @@ module Blocket
     end
 
     def self.render_exception(e)
-      self.feed(:title => "Blocket.se", :url => GITHUB_URL, :updated_at => Time.now) do |feed|
+      self.feed(title: "Blocket.se", url: GITHUB_URL, updated_at: Time.now) do |feed|
         self.feed_entry(feed,
-          :id         => 'exception',
-          :title      => "Scraper exception!",
-          :updated_at => Time.now,
-          :url        => GITHUB_URL,
-          :content    => "<h1>#{e.message}</h1><p>#{e.backtrace}</p>"
+          id: 'exception',
+          title: "Scraper exception!",
+          updated_at: Time.now,
+          url: GITHUB_URL,
+          content: "<h1>#{e.message}</h1><p>#{e.backtrace}</p>"
         )
       end
     end
 
-  protected
+  private
 
     def self.feed(opts={})
-      xml = Builder::XmlMarkup.new(:indent => 2)
-      xml.instruct! :xml, :version => "1.0"
-      xml.feed(:xmlns => "http://www.w3.org/2005/Atom") do |feed|
+      xml = Builder::XmlMarkup.new(indent: 2)
+      xml.instruct! :xml, version: "1.0"
+      xml.feed(xmlns: "http://www.w3.org/2005/Atom") do |feed|
         feed.title     opts[:title]
         feed.id        "#{self.atom_namespace}:#{opts[:url]}"
-        feed.link      :href => opts[:url]
+        feed.link      href: opts[:url]
         feed.updated   opts[:updated_at].iso8601
         feed.author    {|a| a.name 'Blocket.se' }
-        feed.generator NAME, :version => VERSION
-        %w[ads classifieds swedish].each {|cat| feed.category :term => cat }
+        feed.generator NAME, version: VERSION
+        %w[ads classifieds swedish].each {|cat| feed.category term: cat }
         yield(feed)
       end
     end
@@ -190,19 +196,20 @@ module Blocket
         entry.id      "#{self.atom_namespace}:#{opts[:id]}"
         entry.title   opts[:title]
         entry.updated opts[:updated_at].iso8601
-        entry.link    :href => opts[:url]
-        entry.content opts[:content], :type => 'html'
+        entry.link    href: opts[:url]
+        entry.content opts[:content], type: 'html'
       end
     end
 
     def parse_title
       title = @page.title
-      query = @page.at('#searchtext')[:value] rescue ""
-      @title = [query, title].map {|s| s.strip }.reject {|s| s.empty? }.join(' | ')
+      raw_query = @page.at(CSS_QUERY)
+      query = raw_query ? raw_query[:value] : ""
+      @title = [query, title].map { |s| s.strip }.reject { |s| s.empty? }.join(" | ")
     end
 
     def parse_items
-      @items = @page.parser.css('.item_row').map { |row| Blocket::Item.new(row) }
+      @items = @page.parser.css(CSS_ITEM).map { |row| Blocket::Item.new(row) }
     end
   end
 end

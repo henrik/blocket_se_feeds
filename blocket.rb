@@ -3,7 +3,7 @@
 # Blocket.se Feeds by Henrik Nyh <http://henrik.nyh.se> 2010-01-06 under the MIT license.
 # Atom (RSS) feed for Blocket.se searches.
 
-%w[cgi iconv time date rubygems].each {|lib| require lib }
+%w[cgi iconv time date rubygems].each { |lib| require lib }
 
 require "mechanize"  # sudo gem install mechanize
 require('builder') rescue require('active_support')  # sudo gem install builder
@@ -16,12 +16,10 @@ USER_AGENT = Mechanize::AGENT_ALIASES['Windows IE 7']
 
 
 module Blocket
-
   GITHUB_URL = "http://github.com/henrik/blocket_se_feeds"
 
   class Item
-
-    CSS_DATE    = ".list_date"
+    CSS_DATE    = ".jlist_date_image, .list_date"
     CSS_SUBJECT = ".desc"
     CSS_IMAGE   = ".image_content img"
 
@@ -63,7 +61,7 @@ module Blocket
       }
     end
 
-  protected
+    protected
 
     def parse
       parse_time
@@ -114,8 +112,11 @@ module Blocket
       @title = a.inner_text.strip
       @id = @url[/(\d+)\.htm/, 1]
 
-      @price = raw_subject.at('.list_price').inner_text.strip
-      @price = nil if @price.empty?
+      raw_price = raw_subject.at("span[itemprop=price], .list_price")
+      if raw_price
+        @price = raw_price.inner_text.strip
+        @price = nil if @price.empty?
+      end
 
       @lowered_price = !!raw_subject.at('img.sprite_list_icon_price_arrow')
     end
@@ -203,17 +204,12 @@ module Blocket
     def parse_items
       @items = @page.parser.css('.item_row').map { |row| Blocket::Item.new(row) }
     end
-
   end
-
-
 end
 
 
 if __FILE__ == $0
-
   if ENV['REQUEST_URI']  # CGI access.
-
     path = ENV['REQUEST_URI'].split("/").last.to_s
     url = "http://www.blocket.se/#{path}"
 
@@ -225,13 +221,10 @@ if __FILE__ == $0
     rescue => e
       puts Blocket::ScraperFeeder.render_exception(e)
     end
-
   else  # Command line, to debug
-
     url = "http://www.blocket.se/stockholm?q=bokhylla"
+    url = "http://www.blocket.se/stockholm/bostad?ca=11&w=1&cg=3000&st=a"
     scraper = Blocket::ScraperFeeder.new(url)
     puts scraper.to_atom
-
   end
-
 end

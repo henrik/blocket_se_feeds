@@ -5,12 +5,24 @@ require "bundler"
 Bundler.require :default, (ENV['RACK_ENV'] || "development").to_sym
 
 # Defined in ENV on Heroku. To try locally, start memcached and uncomment:
-# ENV['MEMCACHE_SERVERS'] = "localhost"
+# ENV['MEMCACHE_SERVERS'] = "localhost"  # DO NOT COMMIT
 if memcache_servers = ENV['MEMCACHE_SERVERS']
   use Rack::Cache,
     verbose: true,
     metastore:   "memcached://#{memcache_servers}",
     entitystore: "memcached://#{memcache_servers}"
+end
+
+# Make Rack::Cache not break on Latin-1 query params.
+# https://github.com/rtomayko/rack-cache/issues/47
+class Rack::Cache::Key
+  def unescape(x)
+    super(x).encode("UTF-8", "ISO8859-1")
+  end
+
+  def escape(x)
+    super(x.encode("ISO8859-1", "UTF-8")).encode("UTF-8", "ISO8859-1")
+  end
 end
 
 require "./blocket"

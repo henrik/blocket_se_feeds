@@ -17,6 +17,7 @@ GEM
     mime-types (1.19)
     net-http-digest_auth (1.2.1)
     net-http-persistent (2.7)
+    newrelic_rpm (3.3.3)
     nokogiri (1.5.5)
     ntlm-http (0.1.1)
     rack (1.4.1)
@@ -46,6 +47,7 @@ DEPENDENCIES
   builder
   dalli
   mechanize
+  newrelic_rpm
   rack-cache
   sinatra
   unicorn

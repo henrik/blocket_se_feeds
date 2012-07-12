@@ -17,6 +17,9 @@ You don't need much more than this to set up your own copy for free on [Heroku](
     git push heroku                         # Deploy app.
     heroku open                             # See it in your browser.
 
+    # Optional:
+    heroku addons:add newrelic:standard     # Performance analytics.
+
 
 ## CGI on Apache
 

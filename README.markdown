@@ -4,7 +4,7 @@ Ruby script that uses `mechanize` and `Builder` to provide an Atom (RSS, kind of
 
 Blocket.se seem to actively try to block or break attempts to provide feeds of their classifieds.
 
-There is a hosted version of this script on <http://blocket.herokuapp.com>, but you may want to set it up on your own server if they block it, or if the hosted version gets overloaded.
+There is a hosted version of this script on <http://blocket.nyh.name>, but you may want to set it up on your own server if they block it, or if the hosted version gets overloaded.
 
 
 ## On Heroku

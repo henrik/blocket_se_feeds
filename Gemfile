@@ -1,5 +1,6 @@
 source :rubygems
 
+gem "rack-canonical-host"
 gem "sinatra"
 gem "slim"
 gem "rdiscount"

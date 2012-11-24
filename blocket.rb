@@ -19,7 +19,8 @@ module Blocket
   GITHUB_URL = "http://github.com/henrik/blocket_se_feeds"
 
   class Item
-    CSS_DATE          = ".jlist_date_image, .list_date"
+    CSS_DATE_AND_TIME = ".jlist_date_image, .list_date"
+    CSS_TIME          = ".list_time"
     CSS_SUBJECT       = ".desc"
     CSS_IMAGE         = ".image_content img"
     # Real estate listings, other listings.
@@ -67,20 +68,22 @@ module Blocket
     private
 
     def parse
+      parse_subject
       parse_time
       parse_image
-      parse_subject
     end
 
     def parse_time
-      raw_time = @row.at(CSS_DATE).inner_text
+      date_and_time = @row.at(CSS_DATE_AND_TIME)
 
-      parts = raw_time.strip.split
-      time = parts.pop
-      date = parts.join(' ')
+      raw_date = date_and_time.children.first.inner_text
+
+      time = @row.at(CSS_TIME)
+      raw_time = time.inner_text
+
 
       date =
-        case date
+        case raw_date
         when "Idag"
           Date.today
         when "Igår"
@@ -90,7 +93,7 @@ module Blocket
         when /maj/
           date.sub(/maj/, 'may')
         else
-          date
+          raw_date
         end
 
       result = Time.parse("#{date} #{time}")
@@ -169,7 +172,7 @@ module Blocket
           title: "Scraper exception!",
           updated_at: Time.now,
           url: GITHUB_URL,
-          content: "<h1>#{e.message}</h1><p>#{e.backtrace}</p>"
+          content: "<h1>#{e.class.name}: #{e.message}</h1><p>#{e.backtrace}</p>"
         )
       end
     end

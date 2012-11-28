@@ -76,7 +76,7 @@ module Blocket
     def parse_time
       date_and_time = @row.at(CSS_DATE_AND_TIME)
 
-      raw_date = date_and_time.children.first.inner_text
+      raw_date = date_and_time.children.first.inner_text.strip
 
       time = @row.at(CSS_TIME)
       raw_time = time.inner_text

@@ -89,9 +89,9 @@ module Blocket
         when "Igår"
           Date.today - 1
         when /okt/
-          date.sub(/okt/, 'oct')
+          raw_date.sub(/okt/, 'oct')
         when /maj/
-          date.sub(/maj/, 'may')
+          raw_date.sub(/maj/, 'may')
         else
           raw_date
         end

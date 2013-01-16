@@ -21,7 +21,9 @@ get %r{/(.+)} do
     heroku_timeout do
       body = Blocket::ScraperFeeder.new(url).to_atom
       # Only if body didn't time out. Don't cache errors.
-      cache_control :public, max_age: 1800  # 30 mins.
+      unless params[:nocache]
+        cache_control :public, max_age: 1800  # 30 mins.
+      end
       body
     end
   rescue => e

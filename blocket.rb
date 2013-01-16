@@ -150,13 +150,11 @@ module Blocket
         sub(/&o=\d+/, "&o=1").     # Always show first page.
         sub(/&md=\w+/, "&md=th").  # Always show thumbs.
         sub(/&sp=\d+/, "&sp=0")    # Always sort by date.
-      a = Mechanize.new { |agent| agent.user_agent = USER_AGENT }
-      @page = a.get(@url)
-      parse_title
-      parse_items
     end
 
     def to_atom
+      run
+
       updated_at = items.first ? items.first.time : Time.now
       self.class.feed(title: @title, url: @url, updated_at: updated_at) do |feed|
         items.each do |item|
@@ -178,6 +176,24 @@ module Blocket
     end
 
   private
+
+    def run
+      a = Mechanize.new { |agent| agent.user_agent = USER_AGENT }
+      @page = a.get(@url)
+      parse_title
+      parse_items
+    end
+
+    def parse_title
+      title = @page.title
+      raw_query = @page.at(CSS_QUERY)
+      query = raw_query ? raw_query[:value] : ""
+      @title = [query, title].map { |s| s.strip }.reject { |s| s.empty? }.join(" | ")
+    end
+
+    def parse_items
+      @items = @page.parser.css(CSS_ITEM).map { |row| Blocket::Item.new(row) }
+    end
 
     def self.feed(opts={})
       xml = Builder::XmlMarkup.new(indent: 2)
@@ -202,17 +218,6 @@ module Blocket
         entry.link    href: opts[:url]
         entry.content opts[:content], type: 'html'
       end
-    end
-
-    def parse_title
-      title = @page.title
-      raw_query = @page.at(CSS_QUERY)
-      query = raw_query ? raw_query[:value] : ""
-      @title = [query, title].map { |s| s.strip }.reject { |s| s.empty? }.join(" | ")
-    end
-
-    def parse_items
-      @items = @page.parser.css(CSS_ITEM).map { |row| Blocket::Item.new(row) }
     end
   end
 end

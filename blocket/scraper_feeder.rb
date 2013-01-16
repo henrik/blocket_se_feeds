@@ -5,7 +5,6 @@ require('builder') rescue require('active_support')  # sudo gem install builder
 module Blocket
   class ScraperFeeder
     USER_AGENT = Mechanize::AGENT_ALIASES['Windows IE 7']
-
     NAME = "Blocket.se Feeds"
     TAG_NAME = "blocket-se-feeds"
     VERSION = "1.0"

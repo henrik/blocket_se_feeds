@@ -1,8 +1,6 @@
 # Blocket.se Feeds by Henrik Nyh <http://henrik.nyh.se> 2010-01-06 under the MIT license.
 # Atom (RSS) feed for Blocket.se searches.
 
-require "cgi"
-
 # CET should be considered local time.
 # Seems to work fine during daylight savings (CEST).
 ENV['TZ'] = 'CET'
@@ -14,8 +12,9 @@ module Blocket
   GITHUB_URL = "http://github.com/henrik/blocket_se_feeds"
 end
 
-
 if __FILE__ == $0
+  require "cgi"
+
   if ENV['REQUEST_URI']  # CGI access.
     path = ENV['REQUEST_URI'].split("/").last.to_s
     url = "http://www.blocket.se/#{path}"

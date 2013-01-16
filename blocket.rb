@@ -5,7 +5,7 @@
 # Seems to work fine during daylight savings (CEST).
 ENV['TZ'] = 'CET'
 
-require_relative "blocket/item"
+require "rubygems"
 require_relative "blocket/scraper_feeder"
 
 module Blocket

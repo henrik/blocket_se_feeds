@@ -175,7 +175,20 @@ module Blocket
     private
 
     def url
-      fix_params(@url)
+      fix_params(fix_encoding(@url))
+    end
+
+    # Blocket needs Latin-1, at least in some cases.
+    # We want to also support manually constructed URLs with UTF-8.
+    def fix_encoding(url)
+      convert_to_latin_1(url)
+    rescue Encoding::InvalidByteSequenceError
+      # It was Latin-1 already.
+      url
+    end
+
+    def convert_to_latin_1(url)
+      URI.encode(URI.decode(url).encode("ISO-8859-1"))
     end
 
     def fix_params(url)

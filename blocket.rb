@@ -146,17 +146,14 @@ module Blocket
     end
 
     def initialize(url)
-      @url = url.
-        sub(/&o=\d+/, "&o=1").     # Always show first page.
-        sub(/&md=\w+/, "&md=th").  # Always show thumbs.
-        sub(/&sp=\d+/, "&sp=0")    # Always sort by date.
+      @url = url
     end
 
     def to_atom
       run
 
       updated_at = items.first ? items.first.time : Time.now
-      self.class.feed(title: @title, url: @url, updated_at: updated_at) do |feed|
+      self.class.feed(title: @title, url: url, updated_at: updated_at) do |feed|
         items.each do |item|
           self.class.feed_entry(feed, item.to_hash)
         end
@@ -175,11 +172,22 @@ module Blocket
       end
     end
 
-  private
+    private
+
+    def url
+      fix_params(@url)
+    end
+
+    def fix_params(url)
+      url.
+        sub(/&o=\d+/, "&o=1").     # Always show first page.
+        sub(/&md=\w+/, "&md=th").  # Always show thumbs.
+        sub(/&sp=\d+/, "&sp=0")    # Always sort by date.
+    end
 
     def run
       a = Mechanize.new { |agent| agent.user_agent = USER_AGENT }
-      @page = a.get(@url)
+      @page = a.get(url)
       parse_title
       parse_items
     end
@@ -195,13 +203,15 @@ module Blocket
       @items = @page.parser.css(CSS_ITEM).map { |row| Blocket::Item.new(row) }
     end
 
-    def self.feed(opts={})
+    def self.feed(opts = {})
+      url = opts[:url]
+
       xml = Builder::XmlMarkup.new(indent: 2)
       xml.instruct! :xml, version: "1.0"
       xml.feed(xmlns: "http://www.w3.org/2005/Atom") do |feed|
         feed.title     opts[:title]
-        feed.id        "#{self.atom_namespace}:#{opts[:url]}"
-        feed.link      href: opts[:url]
+        feed.id        "#{self.atom_namespace}:#{url}"
+        feed.link      href: url
         feed.updated   opts[:updated_at].iso8601
         feed.author    {|a| a.name 'Blocket.se' }
         feed.generator NAME, version: VERSION

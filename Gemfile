@@ -1,5 +1,7 @@
 source :rubygems
 
+ruby "1.9.3"
+
 gem "rack-canonical-host"
 gem "sinatra"
 gem "slim"

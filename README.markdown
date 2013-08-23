@@ -13,7 +13,7 @@ You don't need much more than this to set up your own copy for free on [Heroku](
 
     gem install heroku                      # Install tools.
     heroku create blocket-some-unique-name  # Create server.
-    heroku addons:add memcache              # Add memcached.
+    heroku addons:add memcachier            # Add memcached.
     git push heroku                         # Deploy app.
     heroku open                             # See it in your browser.
 

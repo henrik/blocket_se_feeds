@@ -22,6 +22,10 @@ describe "The app" do
     it "works with a Latin-1 query" do
       assert_feed_for "/goteborg?q=sk%E5p&cg=0&w=1&st=s&ca=15&is=1&l=0&md=th"
     end
+
+    it "works with a UTF-8 query" do
+      assert_feed_for "/goteborg?q=sk%C3%A5p&cg=0&w=1&st=s&ca=15&is=1&l=0&md=th"
+    end
   end
 
   def assert_feed_for(path)

@@ -6,8 +6,8 @@ require "nokogiri"
 
 module Blocket
   class TimeParser
-    CSS_DATE_AND_TIME = ".jlist_date_image, .list_date"
-    CSS_TIME          = ".list_time"
+    CSS_CONTAINER = ".jlist_date_image, .list_date"
+    CSS_TIME      = ".list_time, .list_date, .time"
 
     def initialize(fragment)
       @fragment = fragment
@@ -24,6 +24,10 @@ module Blocket
       else
         result
       end
+    rescue NoMethodError
+      puts "Failed to parse:"
+      puts @fragment.inspect
+      raise
     end
 
     private
@@ -50,7 +54,7 @@ module Blocket
     end
 
     def html
-      Nokogiri::HTML.fragment(@fragment).at(CSS_DATE_AND_TIME)
+      Nokogiri::HTML.fragment(@fragment).at(CSS_CONTAINER)
     end
   end
 end

@@ -32,6 +32,16 @@ describe Blocket::TimeParser, "#to_time" do
     assert_parse(html("1 jan", "01:23"), "2000-01-01", "01:23:00")
   end
 
+  it "handles the real estate listing time format" do
+    html = %{<div class="jlist_date_image">22 aug <span class="list_date">18:03</span></div>}
+    assert_parse(html, "2000-08-22", "18:03:00")
+  end
+
+  it "handles another real estate listing time format" do
+    html = %{<div class="jlist_date_image">22 aug <span class="time">18:03</span></div>}
+    assert_parse(html, "2000-08-22", "18:03:00")
+  end
+
   def assert_parse(html, date, time)
     actual = described_class.new(html).to_time
     actual.to_date.to_s.should == date

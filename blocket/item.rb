@@ -3,10 +3,10 @@
 require "date"
 require "time"
 
+require_relative "time_parser"
+
 module Blocket
   class Item
-    CSS_DATE_AND_TIME = ".jlist_date_image, .list_date"
-    CSS_TIME          = ".list_time"
     CSS_SUBJECT       = ".desc"
     CSS_IMAGE         = ".image_content img"
     # Real estate listings, other listings.
@@ -60,35 +60,8 @@ module Blocket
     end
 
     def parse_time
-      date_and_time = @row.at(CSS_DATE_AND_TIME)
-
-      raw_date = date_and_time.children.first.inner_text.strip
-
-      time = @row.at(CSS_TIME)
-      raw_time = time.inner_text
-
-
-      date =
-        case raw_date
-        when "Idag"
-          Date.today
-        when "Igår"
-          Date.today - 1
-        when /okt/
-          raw_date.sub(/okt/, 'oct')
-        when /maj/
-          raw_date.sub(/maj/, 'may')
-        else
-          raw_date
-        end
-
-      result = Time.parse("#{date} #{time}")
-
-      if result > Time.now  # Future date? Then it was really last year.
-        result = Time.parse("#{date} #{result.year-1} #{time}")
-      end
-
-      @time = result
+      fragment = @row.to_html
+      @time = TimeParser.new(fragment).to_time
     end
 
     def parse_image

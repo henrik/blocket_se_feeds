@@ -9,11 +9,12 @@ module Blocket
   class Item
     CSS_SUBJECT       = ".desc"
     CSS_IMAGE         = ".image_content img"
-    # Real estate listings, other listings.
     CSS_PRICE         = "span[itemprop=price], .list_price"
     CSS_LOWERED_PRICE = "img.sprite_list_icon_price_arrow"
+    CSS_DETAILS       = ".li_detail_params"
+    CSS_DESC          = ".bostad_desc"
 
-    attr_reader :id, :time, :thumb_url, :url, :title, :price
+    attr_reader :id, :time, :thumb_url, :url, :title, :price, :details, :desc
 
     def initialize(row)
       @row = row
@@ -38,6 +39,10 @@ module Blocket
         lowered_price = self.lowered_price? ? %[<b style="color:green">↘ Prissänkt</b>] : nil   # Unicode south-east arrow.
         data << ["<b>Pris:</b> #{self.price}", lowered_price].compact.join(" ")
       end
+      if self.details
+        data << self.details.join(" | ")
+      end
+      data << self.desc if self.desc
       data << %[<a href="#{self.url}"><img src="#{self.image_url}"></a>] if self.image_url
       data << %[<a href="#{self.url}">Full sajt</a> &nbsp;|&nbsp; <a href="#{self.mobile_url}">Mobil sajt</a>]
       content = data.map {|x| "<p>#{x}</p>" }.join
@@ -57,6 +62,23 @@ module Blocket
       parse_subject
       parse_time
       parse_image
+      parse_details
+      parse_description
+    end
+
+    def parse_subject
+      raw_subject = @row.at(CSS_SUBJECT)
+      a = raw_subject.at('a')
+      @url = a[:href]
+      @title = node_content(a)
+      @id = @url[/(\d+)\.htm/, 1]
+
+      if raw_price = raw_subject.at(CSS_PRICE)
+        @price = node_content(raw_price)
+        @price = nil if @price.empty?
+      end
+
+      @lowered_price = raw_subject.at(CSS_LOWERED_PRICE) != nil
     end
 
     def parse_time
@@ -71,19 +93,19 @@ module Blocket
       end
     end
 
-    def parse_subject
-      raw_subject = @row.at(CSS_SUBJECT)
-      a = raw_subject.at('a')
-      @url = a[:href]
-      @title = a.inner_text.strip
-      @id = @url[/(\d+)\.htm/, 1]
+    def parse_details
+      @details = @row.search(CSS_DETAILS).map { |node|
+        node_content(node)
+      }
+    end
 
-      if raw_price = raw_subject.at(CSS_PRICE)
-        @price = raw_price.inner_text.strip
-        @price = nil if @price.empty?
-      end
+    def parse_description
+      node = @row.at(CSS_DESC)
+      @desc = node_content(node)
+    end
 
-      @lowered_price = raw_subject.at(CSS_LOWERED_PRICE) != nil
+    def node_content(node)
+      node && node.inner_text.strip
     end
   end
 end

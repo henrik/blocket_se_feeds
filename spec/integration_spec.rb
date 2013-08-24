@@ -6,15 +6,14 @@ describe "The app" do
   include Rack::Test::Methods
 
   describe "start page" do
-    before { get "/" }
-
     it "works" do
+      get "/"
       last_response.should be_ok
       last_response.body.should include "<h1>Blocket"
     end
   end
 
-  describe "query" do
+  describe "feed" do
     it "works with a simple query" do
       assert_feed_for "/stockholm?q=fisk"
     end
@@ -39,7 +38,6 @@ describe "The app" do
     last_response.body.should include "<entry>"
     last_response.body.should_not include "Scraper exception"
   end
-
 
   def app
     Sinatra::Application

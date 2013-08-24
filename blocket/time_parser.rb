@@ -14,25 +14,8 @@ module Blocket
     end
 
     def to_time
-      raw_date = html.children.first.inner_text.strip
-
-      time = html.at(CSS_TIME)
-      raw_time = time.inner_text
-
-
-      date =
-        case raw_date
-        when "Idag"
-          Date.today
-        when "Igår"
-          Date.today - 1
-        when /okt/
-          raw_date.sub(/okt/, 'oct')
-        when /maj/
-          raw_date.sub(/maj/, 'may')
-        else
-          raw_date
-        end
+      date = parse_date
+      time = parse_time
 
       result = Time.parse("#{date} #{time}")
 
@@ -44,6 +27,27 @@ module Blocket
     end
 
     private
+
+    def parse_date
+      raw_date = html.children.first.inner_text.strip
+
+      case raw_date
+      when "Idag"
+        Date.today
+      when "Igår"
+        Date.today - 1
+      when /okt/
+        raw_date.sub(/okt/, 'oct')
+      when /maj/
+        raw_date.sub(/maj/, 'may')
+      else
+        raw_date
+      end
+    end
+
+    def parse_time
+      html.at(CSS_TIME).inner_text
+    end
 
     def html
       Nokogiri::HTML.fragment(@fragment).at(CSS_DATE_AND_TIME)

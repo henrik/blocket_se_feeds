@@ -11,12 +11,15 @@ if memcache_servers = ENV['MEMCACHE_SERVERS']
     entitystore: "memcached://#{memcache_servers}"
 end
 
-if raygun_api_key = ENV['RAYGUN_API_KEY']
-  Raygun.setup do |config|
-    config.api_key = raygun_api_key
-  end
 
-  use Raygun::RackExceptionInterceptor
+raygun_api_key = ENV['RAYGUN_API_KEY']
+
+Raygun.setup do |config|
+  config.api_key = raygun_api_key
+  config.silence_reporting = !raygun_api_key
 end
+
+use Raygun::RackExceptionInterceptor
+
 
 run Sinatra::Application

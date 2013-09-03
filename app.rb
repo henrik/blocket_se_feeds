@@ -27,8 +27,13 @@ get %r{/(.+)} do
       body
     end
   rescue => e
+    track_exception(e)
     Blocket::ScraperFeeder.render_exception(e)
   end
+end
+
+def track_exception(e)
+  Raygun.track_exception(e)
 end
 
 # http://adam.heroku.com/past/2008/6/17/battling_wedged_mongrels_with_a/

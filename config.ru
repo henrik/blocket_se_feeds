@@ -1,4 +1,5 @@
 require "./app"
+require "./raygun_rack"
 
 use Rack::CanonicalHost, ENV["CANONICAL_HOST"] if ENV["CANONICAL_HOST"]
 
@@ -19,7 +20,7 @@ Raygun.setup do |config|
   config.silence_reporting = !raygun_api_key
 end
 
-use Raygun::RackExceptionInterceptor
+use RaygunRack
 
 
 run Sinatra::Application

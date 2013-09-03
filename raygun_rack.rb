@@ -22,6 +22,6 @@ class RaygunRack
   private
 
   def track_exception(exception, env)
-     env["raygun.error_id"] = Raygun.track_exception(exception, env)
+    env["raygun.error_id"] = Raygun.track_exception(exception, env)
   end
 end

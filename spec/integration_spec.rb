@@ -29,6 +29,11 @@ describe "The app" do
     it "works with real estate" do
       assert_feed_for "/bostad/uthyres/lagenheter/stockholm?q=&sort=&ss=4&se=&ros=3&roe=&mre=&is=1&l=0&md=th&as=131_4&as=131_6&as=131_7&as=131_9&as=131_11"
     end
+
+    it "404s on nonexistent pages" do
+      get "/tradera_regerar"
+      last_response.status.should == 404
+    end
   end
 
   def assert_feed_for(path)

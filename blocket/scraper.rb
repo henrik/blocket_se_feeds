@@ -2,6 +2,8 @@ require "mechanize"  # sudo gem install mechanize
 
 module Blocket
   class Scraper
+    class PageNotFoundError < StandardError; end
+
     USER_AGENT = Mechanize::AGENT_ALIASES['Windows IE 7']
     CSS_QUERY = "#searchtext"
     CSS_ITEM  = ".item_row"
@@ -13,10 +15,12 @@ module Blocket
     end
 
     def run
-      a = Mechanize.new { |agent| agent.user_agent = USER_AGENT }
-      @page = a.get(url)
-      parse_title
-      parse_items
+      raise_on_404 do
+        a = Mechanize.new { |agent| agent.user_agent = USER_AGENT }
+        @page = a.get(url)
+        parse_title
+        parse_items
+      end
     end
 
     def url
@@ -24,6 +28,16 @@ module Blocket
     end
 
     private
+
+    def raise_on_404
+      yield
+    rescue Mechanize::ResponseCodeError => e
+      if e.message.include?("404")
+        raise PageNotFoundError
+      else
+        raise
+      end
+    end
 
     # Blocket needs Latin-1, at least in some cases.
     # We want to also support manually constructed URLs with UTF-8.

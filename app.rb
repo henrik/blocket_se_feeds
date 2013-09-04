@@ -26,6 +26,8 @@ get %r{/(.+)} do
       end
       body
     end
+  rescue Blocket::Scraper::PageNotFoundError
+    halt 404, "No such page."
   rescue => e
     track_exception(e)
     Blocket::ScraperFeeder.render_exception(e)

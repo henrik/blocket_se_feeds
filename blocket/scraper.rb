@@ -3,6 +3,7 @@ require "mechanize"  # sudo gem install mechanize
 module Blocket
   class Scraper
     class PageNotFoundError < StandardError; end
+    class EncodingError < StandardError; end
 
     USER_AGENT = Mechanize::AGENT_ALIASES['Windows IE 7']
     CSS_QUERY = "#searchtext"
@@ -50,6 +51,8 @@ module Blocket
 
     def convert_to_latin_1(url)
       URI.encode(URI.decode(url).encode("ISO-8859-1"))
+    rescue Encoding::UndefinedConversionError => e
+      raise EncodingError.new("Error converting #{url.inspect} - original error: #{e.message}")
     end
 
     def fix_params(url)

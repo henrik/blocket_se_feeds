@@ -50,9 +50,15 @@ module Blocket
     end
 
     def convert_to_latin_1(url)
+      @conversion_attempts ||= 0
+      @conversion_attempts += 1
       URI.encode(URI.decode(url).encode("ISO-8859-1"))
     rescue Encoding::UndefinedConversionError => e
-      raise EncodingError.new("Error converting #{url.inspect} - original error: #{e.message}")
+      if @conversion_attempts > 1
+        raise EncodingError.new("Error converting #{url.inspect} - original error: #{e.message}")
+      end
+      # Assume the input was unencoded Latin-1.
+      convert_to_latin_1(url.force_encoding("ISO-8859-1"))
     end
 
     def fix_params(url)

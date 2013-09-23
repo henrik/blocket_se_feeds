@@ -29,6 +29,7 @@ get %r{/(.+)} do
   rescue Blocket::Scraper::PageNotFoundError
     halt 404, "No such page."
   rescue => e
+    e.message += " PATH: #{request.fullpath}" if e.message.include?("Mechanize::Image")  # debug issue
     track_exception(e)
     Blocket::ScraperFeeder.render_exception(e)
   end

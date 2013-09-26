@@ -28,6 +28,8 @@ get %r{/(.+)} do
     end
   rescue Blocket::Scraper::PageNotFoundError
     halt 404, "No such page."
+  rescue Timeout::Error
+    halt 504, "Timeout."
   rescue => e
     # debug issue
     if e.message.include?("Mechanize::Image")

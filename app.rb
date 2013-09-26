@@ -18,20 +18,22 @@ get %r{/(.+)} do
   url = "http://www.blocket.se#{request.fullpath}"
   content_type "application/atom+xml", charset: "utf-8"
 
-  heroku_timeout do
-    body = Blocket::ScraperFeeder.new(url).to_atom
-    # Only if body didn't time out. Don't cache errors.
-    unless params[:nocache]
-      cache_control :public, max_age: 1800  # 30 mins.
+  begin
+    heroku_timeout do
+      body = Blocket::ScraperFeeder.new(url).to_atom
+      # Only if body didn't time out. Don't cache errors.
+      unless params[:nocache]
+        cache_control :public, max_age: 1800  # 30 mins.
+      end
+      body
     end
-    body
+  rescue Blocket::Scraper::PageNotFoundError
+    halt 404, "No such page."
+  rescue Timeout::Error
+    halt 504, "Timeout."
+  rescue => e
+    render_exception(e)
   end
-rescue Blocket::Scraper::PageNotFoundError
-  halt 404, "No such page."
-rescue Timeout::Error
-  halt 504, "Timeout."
-rescue => e
-  render_exception(e)
 end
 
 def render_exception(e)

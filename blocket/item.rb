@@ -25,10 +25,6 @@ module Blocket
       @thumb_url && @thumb_url.sub("/lithumbs", "/images")
     end
 
-    def mobile_url
-      url.sub("//www.", "//mobil.")
-    end
-
     def lowered_price?
       @lowered_price
     end
@@ -44,7 +40,6 @@ module Blocket
       end
       data << self.desc if self.desc
       data << %[<a href="#{self.url}"><img src="#{self.image_url}"></a>] if self.image_url
-      data << %[<a href="#{self.url}">Full sajt</a> &nbsp;|&nbsp; <a href="#{self.mobile_url}">Mobil sajt</a>]
       content = data.map {|x| "<p>#{x}</p>" }.join
 
       {

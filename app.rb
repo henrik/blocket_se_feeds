@@ -14,6 +14,10 @@ get "/" do
   slim :index
 end
 
+get '/apple-touch-icon-precomposed.png' do
+  halt 404, "no icon for you!"
+end
+
 get %r{/(.+)} do
   url = "http://www.blocket.se#{request.fullpath}"
   content_type "application/atom+xml", charset: "utf-8"

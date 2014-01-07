@@ -15,9 +15,7 @@ gem "raygun4ruby"
 # Rewrites Heroku ENV names so Dalli just works.
 gem "memcachier"
 
-group :development do
-  gem "rake"
-end
+gem "rake"
 
 group :test do
   gem "rspec"

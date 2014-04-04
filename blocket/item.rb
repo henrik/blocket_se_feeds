@@ -7,9 +7,9 @@ require_relative "time_parser"
 
 module Blocket
   class Item
-    CSS_SUBJECT       = ".desc"
+    CSS_SUBJECT       = ".desc, .media-body"
     CSS_IMAGE         = ".image_content img"
-    CSS_PRICE         = "span[itemprop=price], .list_price"
+    CSS_PRICE         = "span[itemprop=price], .list_price, .monthly_rent"
     CSS_LOWERED_PRICE = "img.sprite_list_icon_price_arrow"
     CSS_DETAILS       = ".li_detail_params"
     CSS_DESC          = ".bostad_desc"

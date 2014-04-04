@@ -72,7 +72,7 @@ module Blocket
       title = @page.title
       raw_query = @page.at(CSS_QUERY)
       query = raw_query ? raw_query[:value] : ""
-      @title = [query, title].map { |s| s.strip }.reject { |s| s.empty? }.join(" | ")
+      @title = [ query, title ].map { |s| s.to_s.strip }.reject { |s| s.empty? }.join(" | ")
     end
 
     def parse_items

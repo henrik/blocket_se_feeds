@@ -5,7 +5,7 @@ module Blocket
     class PageNotFoundError < StandardError; end
     class EncodingError < StandardError; end
 
-    USER_AGENT = Mechanize::AGENT_ALIASES['Windows IE 7']
+    USER_AGENT = Mechanize::AGENT_ALIASES['Windows IE 10']
     CSS_QUERY = "#searchtext"
     CSS_ITEM  = ".item_row"
 

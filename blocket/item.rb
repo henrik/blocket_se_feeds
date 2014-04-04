@@ -54,26 +54,29 @@ module Blocket
     private
 
     def parse
-      parse_subject
+      parse_subject_and_id_and_url
+      parse_price
       parse_time
       parse_image
       parse_details
       parse_description
     end
 
-    def parse_subject
+    def parse_subject_and_id_and_url
       raw_subject = @row.at(CSS_SUBJECT)
       a = raw_subject.at('a')
       @url = a[:href]
       @title = node_content(a)
       @id = @url[/(\d+)\.htm/, 1]
+    end
 
-      if raw_price = raw_subject.at(CSS_PRICE)
+    def parse_price
+      if raw_price = @row.at(CSS_PRICE)
         @price = node_content(raw_price)
         @price = nil if @price.empty?
       end
 
-      @lowered_price = raw_subject.at(CSS_LOWERED_PRICE) != nil
+      @lowered_price = @row.at(CSS_LOWERED_PRICE) != nil
     end
 
     def parse_time

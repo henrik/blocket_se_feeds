@@ -52,7 +52,7 @@ def render_exception(e)
 end
 
 def track_exception(e)
-  Raygun.track_exception(e)
+  Raygun.track_exception(e) if Raygun.configuration.api_key
 end
 
 # http://adam.heroku.com/past/2008/6/17/battling_wedged_mongrels_with_a/

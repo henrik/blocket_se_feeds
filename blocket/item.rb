@@ -7,12 +7,12 @@ require_relative "time_parser"
 
 module Blocket
   class Item
-    CSS_SUBJECT       = ".desc, .media-body"
-    CSS_IMAGE         = ".image_content img"
-    CSS_PRICE         = "span[itemprop=price], .list_price, .monthly_rent"
+    CSS_SUBJECT       = ".desc, .media-heading"
+    CSS_IMAGE         = ".image_content img, .sprite_list_placeholder .media-object"
+    CSS_PRICE         = "span[itemprop=price], .list_price"
     CSS_LOWERED_PRICE = "img.sprite_list_icon_price_arrow"
     CSS_DETAILS       = ".li_detail_params"
-    CSS_DESC          = ".bostad_desc"
+    CSS_DESC          = ".short_body_desc"
 
     attr_reader :id, :time, :thumb_url, :url, :title, :price, :details, :desc
 
@@ -87,7 +87,11 @@ module Blocket
     def parse_image
       if raw_img = @row.at(CSS_IMAGE)
         # Lazy-loaded images put the src in longdesc.
-        @thumb_url = raw_img[:longdesc] || raw_img[:src]
+        # Property listings use a CSS background-image.
+        @thumb_url =
+          raw_img[:longdesc] ||
+          raw_img[:src] ||
+          raw_img[:style].to_s[/url\((.+?)\)/, 1]
       end
     end
 

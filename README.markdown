@@ -2,14 +2,12 @@
 
 Ruby script that uses `mechanize` and `Builder` to provide an Atom (RSS, kind of) feed of Blocket.se search results. Blocket.se is a Swedish classifieds site.
 
-Blocket.se seem to actively try to block or break attempts to provide feeds of their classifieds.
-
 There is a hosted version of this script on <http://blocket.nyh.name>, but you may want to set it up on your own server if they block it, or if the hosted version gets overloaded.
 
 
 ## On Heroku
 
-You don't need much more than this to set up your own copy for free on [Heroku](http://heroku.com). They're incredible.
+This is how to set up your own copy for free on [Heroku](http://heroku.com):
 
     gem install heroku                      # Install tools.
     heroku create blocket-some-unique-name  # Create server.

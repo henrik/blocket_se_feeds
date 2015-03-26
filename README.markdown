@@ -5,6 +5,13 @@ Ruby script that uses `mechanize` and `Builder` to provide an Atom (RSS, kind of
 There is a hosted version of this script on <http://blocket.nyh.name>, but you may want to set it up on your own server if they block it, or if the hosted version gets overloaded.
 
 
+## Development
+
+    bundle
+    rackup
+    open http://localhost:9292
+
+
 ## On Heroku
 
 This is how to set up your own copy for free on [Heroku](http://heroku.com):

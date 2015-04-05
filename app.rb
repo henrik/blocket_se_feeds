@@ -14,8 +14,8 @@ get "/" do
   slim :index
 end
 
-get '/apple-touch-icon-precomposed.png' do
-  halt 404, "no icon for you!"
+get %r{\.png\z}i do
+  halt 404, "no image for you!"
 end
 
 get %r{/(.+)} do

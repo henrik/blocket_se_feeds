@@ -7,12 +7,14 @@ require_relative "time_parser"
 
 module Blocket
   class Item
-    CSS_SUBJECT       = ".desc, .media-heading"
-    CSS_IMAGE         = ".image_content img, .sprite_list_placeholder .media-object"
-    CSS_PRICE         = "span[itemprop=price], .list_price"
-    CSS_LOWERED_PRICE = "img.sprite_list_icon_price_arrow"
-    CSS_DETAILS       = ".li_detail_params"
-    CSS_DESC          = ".short_body_desc"
+    #                   regular             bostad
+    CSS_SUBJECT       = "h1[itemprop=name], .media-heading"
+    CSS_IMAGE         = ".item_image,       a.media-object"
+    CSS_PRICE         = "[itemprop=price]"
+    CSS_LOWERED_PRICE = ".blocket-icon-price-lowered"
+
+    # Only bostad has this now.
+    CSS_DESC          = ".details"
 
     attr_reader :id, :time, :thumb_url, :url, :title, :price, :details, :desc
 
@@ -58,7 +60,6 @@ module Blocket
       parse_price
       parse_time
       parse_image
-      parse_details
       parse_description
     end
 
@@ -93,12 +94,6 @@ module Blocket
           raw_img[:src] ||
           raw_img[:style].to_s[/url\((.+?)\)/, 1]
       end
-    end
-
-    def parse_details
-      @details = @row.search(CSS_DETAILS).map { |node|
-        node_content(node)
-      }
     end
 
     def parse_description

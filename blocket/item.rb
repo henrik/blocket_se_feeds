@@ -14,7 +14,7 @@ module Blocket
     CSS_LOWERED_PRICE = ".blocket-icon-price-lowered"
 
     # Only bostad has this now.
-    CSS_DESC          = ".details"
+    CSS_DETAILS       = ".li_detail_params:not(.price)"
 
     attr_reader :id, :time, :thumb_url, :url, :title, :price, :details, :desc
 
@@ -97,8 +97,8 @@ module Blocket
     end
 
     def parse_description
-      node = @row.at(CSS_DESC)
-      @desc = node_content(node)
+      nodes = @row.search(CSS_DETAILS)
+      @desc = nodes.map { |node| node_content(node) }.join(" | ")
     end
 
     def node_content(node)

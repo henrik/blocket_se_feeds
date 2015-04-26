@@ -9,46 +9,13 @@ describe Blocket::TimeParser, "#to_time" do
   before { Timecop.freeze(now) }
   after { Timecop.return }
 
-  it "handles 'Idag'" do
-    assert_parse(html("Idag", "22:58"), "2000-12-30", "22:58:00")
-  end
+  it "parses the time" do
+    fragment = %{<article>
+      <time datetime="2015-04-24 19:27:42" pubdate="" itemprop="datePublished" class="pull-right">24 apr  19:27</time>
+    </article>}
 
-  it "handles 'Igår'" do
-    assert_parse(html("Igår", "22:58"), "2000-12-29", "22:58:00")
-  end
+    result = Blocket::TimeParser.new(fragment).to_time
 
-  %w[jan feb mar apr maj jun jul aug sep okt nov dec].each_with_index do |month, index|
-    num = index + 1
-    it "handles the month '#{month}'" do
-      assert_parse(html("1 #{month}", "22:58"), "2000-#{"%02d" % num}-01", "22:58:00")
-    end
-  end
-
-  it "assumes last year for a future date" do
-    assert_parse(html("31 dec", "22:58"), "1999-12-31", "22:58:00")
-  end
-
-  it "handles < 12h times" do
-    assert_parse(html("1 jan", "01:23"), "2000-01-01", "01:23:00")
-  end
-
-  it "handles the real estate listing time format" do
-    html = %{<div class="jlist_date_image">22 aug <span class="list_date">18:03</span></div>}
-    assert_parse(html, "2000-08-22", "18:03:00")
-  end
-
-  it "handles another real estate listing time format" do
-    html = %{<div class="jlist_date_image">22 aug <span class="time">18:03</span></div>}
-    assert_parse(html, "2000-08-22", "18:03:00")
-  end
-
-  def assert_parse(html, date, time)
-    actual = described_class.new(html).to_time
-    actual.to_date.to_s.should == date
-    actual.strftime("%H:%M:%S").should == time
-  end
-
-  def html(date, time)
-      %{<div class="desc"><div class="list_date">#{date} <span class="list_time">#{time}</span></div>}
+    result.should == Time.new(2015, 4, 24,  19, 27, 42)
   end
 end

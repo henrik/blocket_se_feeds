@@ -12,9 +12,6 @@ gem "dalli"
 gem "rack-cache"
 gem "raygun4ruby"
 
-# Rewrites Heroku ENV names so Dalli just works.
-gem "memcachier"
-
 gem "rake"
 
 group :test do

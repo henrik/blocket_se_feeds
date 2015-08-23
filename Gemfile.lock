@@ -20,7 +20,6 @@ GEM
       nokogiri (~> 1.4)
       ntlm-http (~> 0.1, >= 0.1.1)
       webrobots (~> 0.0, >= 0.0.9)
-    memcachier (0.0.2)
     mime-types (1.19)
     multi_json (1.7.9)
     multi_xml (0.5.5)
@@ -80,7 +79,6 @@ DEPENDENCIES
   builder
   dalli
   mechanize
-  memcachier
   newrelic_rpm
   rack-cache
   rack-canonical-host

@@ -1,6 +1,6 @@
 # Blocket.se Feeds
 
-Ruby script that uses `mechanize` and `Builder` to provide an Atom (RSS, kind of) feed of Blocket.se search results. Blocket.se is a Swedish classifieds site.
+Ruby script that provides an Atom (RSS, kind of) feed of Blocket.se search results. Blocket.se is a Swedish classifieds site.
 
 There is a hosted version of this script on <http://blocket.nyh.name>, but you may want to set it up on your own server if they block it, or if the hosted version gets overloaded.
 
@@ -14,7 +14,7 @@ There is a hosted version of this script on <http://blocket.nyh.name>, but you m
 
 ## On Heroku
 
-This is how to set up your own copy for free on [Heroku](http://heroku.com):
+The script used to be Hosted on [Heroku](http://heroku.com) until they limited their free offering. You may still be able to run it there with something like this:
 
     gem install heroku                      # Install tools.
     heroku create blocket-some-unique-name  # Create server.
@@ -24,6 +24,8 @@ This is how to set up your own copy for free on [Heroku](http://heroku.com):
 
     # Optional:
     heroku addons:add newrelic:stark        # Performance analytics.
+
+You will probably also need to add `memcachier` to `Gemfile` and run `bundle`.
 
 
 ## CGI on Apache

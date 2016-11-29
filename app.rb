@@ -4,7 +4,6 @@ require "rubygems"
 require "bundler"
 Bundler.require :default, (ENV['RACK_ENV'] || "development").to_sym
 
-require "./rack_cache_patch"
 require "./blocket"
 
 set :views, -> { root }

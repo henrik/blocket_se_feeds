@@ -28,7 +28,7 @@ GEM
     newrelic_rpm (3.3.3)
     nokogiri (1.5.5)
     ntlm-http (0.1.1)
-    rack (1.4.1)
+    rack (1.6.12)
     rack-cache (1.2)
       rack (>= 0.4)
     rack-canonical-host (0.0.8)

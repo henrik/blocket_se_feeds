@@ -6,37 +6,6 @@ html
     h1= @title
     markdown:
 
-      En tjänst för att bevaka Blockets annonser med RSS.
+      Detta var en tjänst för att bevaka Blockets annonser med RSS, men gick sönder och underhålls inte längre.
 
-      ## Instruktioner
-
-      Gör en sökning på Blocket och byt sen ut **`www.blocket.se`** i adressen mot **`#{request.host_with_port}`** så har du ett s.k. RSS-feed.
-
-      T.ex. när du är på <code>http://<strong>www.blocket.se</strong>/stockholm?q=fisk</code>, ändra till
-      <code>http://<strong>#{request.host_with_port}</strong>/stockholm?q=fisk</code>.
-
-
-      ## Vad ska jag göra med RSS-feed-adressen?
-
-      Du kan lägga till den i någon tjänst som skickar email, t.ex. [Blogtrottr](http://blogtrottr.com/).
-
-      Eller i en tjänst som ger ett Facebook-liknande flöde, t.ex. [Feedly](http://feedly.com).
-
-      Du kan lägga till hur många RSS-feeds som helst.
-
-      De flesta bloggar, nyhetssajter med mera har egna RSS-feeds som du kan följa på samma sätt.
-
-
-      ## Smidigare skapande av RSS-adress
-
-      Bokmärk nedanstående länk (gärna i din webbläsares bokmärkesrad) så kan du sedan med ett klick på bokmärket få en RSS-adress från en Blocket-sökning.
-
-      <a href="javascript:location.href=location.href.replace('www.blocket.se', '#{request.host_with_port}');">Blocket RSS</a>
-
-
-      ## Tekniska detaljer
-
-      Koden kan sättas upp på en annan server om Blocket blockerar denna, eller om du vill undvika att denna är överbelastad. [Visa koden.](http://github.com/henrik/blocket_se_feeds)
-
-
-      Av [Henrik Nyh](http://henrik.nyh.se).
+      [Koden är tillgänglig](http://github.com/henrik/blocket_se_feeds) om någon annan vill uppdatera den och sätta upp en ny tjänst:

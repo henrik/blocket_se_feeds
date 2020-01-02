@@ -23,13 +23,20 @@ module Blocket
     end
 
     def self.render_exception(e)
+      feed_with_single_entry(
+        title: "Scraper exception!",
+        html_content: "<h1>#{e.class.name}: #{e.message}</h1><p>#{e.backtrace}</p>",
+      )
+    end
+
+    def self.feed_with_single_entry(title:, html_content:)
       self.feed(title: "Blocket.se", url: GITHUB_URL, updated_at: Time.now) do |feed|
         self.feed_entry(feed,
-          id: 'exception',
-          title: "Scraper exception!",
+          id: "entry",
+          title: title,
           updated_at: Time.now,
           url: GITHUB_URL,
-          content: "<h1>#{e.class.name}: #{e.message}</h1><p>#{e.backtrace}</p>"
+          content: html_content,
         )
       end
     end

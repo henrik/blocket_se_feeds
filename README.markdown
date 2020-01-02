@@ -1,5 +1,8 @@
 # Blocket.se Feeds
 
+
+**2020-01-02: Sorry, no longer maintained! Feel free to clone, update and set up your own server.**
+
 Ruby script that provides an Atom (RSS, kind of) feed of Blocket.se search results. Blocket.se is a Swedish classifieds site.
 
 There is a hosted version of this script on <http://blocket.nyh.name>, but you may want to set it up on your own server if they block it, or if the hosted version gets overloaded.
